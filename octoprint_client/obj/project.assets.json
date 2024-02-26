@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/sschi/Development/Projects/octo-lens/OctoPrintClient/OctoPrintClient.csproj",
+      "projectUniqueName": "/Users/sschi/Development/Projects/octo-lens/octoprint_client/OctoPrintClient.csproj",
       "projectName": "OctoPrintClient",
-      "projectPath": "/Users/sschi/Development/Projects/octo-lens/OctoPrintClient/OctoPrintClient.csproj",
+      "projectPath": "/Users/sschi/Development/Projects/octo-lens/octoprint_client/OctoPrintClient.csproj",
       "packagesPath": "/Users/sschi/.nuget/packages/",
-      "outputPath": "/Users/sschi/Development/Projects/octo-lens/OctoPrintClient/obj/",
+      "outputPath": "/Users/sschi/Development/Projects/octo-lens/octoprint_client/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/sschi/.nuget/NuGet/NuGet.Config"
