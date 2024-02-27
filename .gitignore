@@ -1,0 +1,6 @@
+# Ignoriere das Verzeichnis .vs und alle Unterverzeichnisse
+/.vs/
+
+# Falls du auch bestimmte Dateien oder Muster ignorieren möchtest, füge sie ebenfalls hinzu:
+# Beispiel: Ignoriere alle Dateien mit der Erweiterung .vsidx
+*.vsidx
