@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OctoPrintSharpApi" Version="1.2.2" />
+    <Reference Include="Printerface">
+      <HintPath>lib\Printerface.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
