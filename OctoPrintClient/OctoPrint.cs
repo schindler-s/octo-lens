@@ -1,14 +1,12 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿
 
-public class OctoPrintClient
+public class OctoPrint
 {
     private readonly string _octoPrintUrl;
     private readonly string _apiKey;
     private readonly HttpClient _httpClient;
 
-    public OctoPrintClient(string octoPrintUrl, string apiKey)
+    public OctoPrint(string octoPrintUrl, string apiKey)
     {
         _octoPrintUrl = octoPrintUrl;
         _apiKey = apiKey;
