@@ -463,8 +463,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Placeholder for GUI Data\n\nStatus: ON\n\nRunning: False\n\nReady: True\n\nTemperature:
-    57\xB0\n\n"
+  m_text: '
+
+    No Data'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6a84f857bec7e7345843ae29404c57ce, type: 2}
   m_sharedMaterial: {fileID: 21202819797275496, guid: 6a84f857bec7e7345843ae29404c57ce, type: 2}
@@ -491,8 +492,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -527,7 +528,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 1
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: -24.667788, w: 2.6418085}
+  m_margin: {x: 0, y: -3.1116152, z: -38.593273, w: -24.024109}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -586,7 +587,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 634405887}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e0ec8b5800dca54ebc075b66e9931ff, type: 3}
+  m_Script: {fileID: 11500000, guid: aeae7da4f6edeb4409f8488de5585978, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   textMesh: {fileID: 634405889}
@@ -1777,11 +1778,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4832342967581645003, guid: 9d2379eb232d3d643be000b17bc0b813, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.697
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4832342967581645003, guid: 9d2379eb232d3d643be000b17bc0b813, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.098
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4832342967581645003, guid: 9d2379eb232d3d643be000b17bc0b813, type: 3}
       propertyPath: m_LocalRotation.w

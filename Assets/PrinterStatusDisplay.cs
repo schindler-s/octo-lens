@@ -1,71 +1,73 @@
 using UnityEngine;
-using TMPro; // For TextMeshPro
 using System.Threading.Tasks;
-using OctoprintClient; // Make sure your custom DLL is properly referenced
+using TMPro; // Add the TextMesh Pro namespace
+using OctoprintClient;
 
 public class PrinterStatusDisplay : MonoBehaviour
 {
     public TextMeshPro textMesh; // Reference to your Text Mesh Pro component
+
+    // Set your OctoPrint server URL and API key
     private string octoPrintUrl = "http://192.168.0.104/";
     private string apiKey = "34399E4785154539964185967FBE3EC7";
     private OctoprintConnection connection;
+    private OctoprintPrinterTracker printerTracker;
 
-    // Start is called before the first frame update
     async void Start()
     {
-        // Attempt to connect to the printer
         connection = await CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
-
-        // Check if connection is successful
         if (connection == null)
         {
-            UpdateTextMesh("Failed to connect to printer.");
+            UpdateText("Failed to connect to printer. Exiting.");
             return;
         }
-        // Subscribe to printer state changes
-        connection.Printers.PrinterstateHandlers += PrinterStatusChanged;
 
-        // Start WebSocket to listen for updates
-        connection.WebsocketStart();
+        printerTracker = connection.Printers;
+        printerTracker.BestBeforeMilisecs = 1000;
+        printerTracker.PrinterstateHandlers += PrinterStatusChanged;
+        ShowPrinterStatus(printerTracker);
+
+        // Removed WebSocket handling
     }
 
-    private void OnDestroy()
+    void ShowPrinterStatus(OctoprintPrinterTracker printerTracker)
     {
-        // Clean up the connection and stop the WebSocket
-        if (connection != null)
-        {
-            connection.WebsocketStop();
-        }
+        OctoprintFullPrinterState printerState = printerTracker.GetFullPrinterState();
+        if (printerState == null) return;
+        OctoprintTemperatureState tempState = printerState.TempState;
+        UpdateText("\nNew Message from Printer:\n" + tempState.ToString());
     }
 
-    private void PrinterStatusChanged(OctoprintPrinterState newPrinterState)
+    void PrinterStatusChanged(OctoprintPrinterState newPrinterState)
     {
-        // Update the Text Mesh with the new printer state
-        UpdateTextMesh($"Printer status changed:\n{newPrinterState}");
+        UpdateText("Printer status changed:\n" + newPrinterState.ToString());
     }
 
-    private void UpdateTextMesh(string text)
+    async Task<OctoprintConnection> CreateOctoprintConnectionAsync(string octoPrintUrl, string apiKey)
     {
-        // Ensure we are on the main thread when updating the UI
-        if (textMesh != null)
-        {
-            textMesh.text = text;
-        }
-    }
-
-    private async Task<OctoprintConnection> CreateOctoprintConnectionAsync(string url, string key)
-    {
+        UpdateText("Connecting to printer...");
         try
         {
-            var connection = new OctoprintConnection(url, key);
-            // Additional setup or validation of connection if necessary
-            UpdateTextMesh("Connected to printer.");
+            OctoprintConnection connection = await Task.Run(() =>
+            {
+                return new OctoprintConnection(octoPrintUrl, apiKey);
+            });
+            UpdateText("Connected!");
             return connection;
         }
         catch (System.Exception ex)
         {
-            UpdateTextMesh($"Failed to connect to printer: {ex.Message}");
+            UpdateText($"Failed to connect to printer: {ex.Message}");
             return null;
+        }
+    }
+
+    // Update the TextMeshPro text
+    void UpdateText(string text)
+    {
+        if (textMesh != null)
+        {
+            textMesh.text = text;
         }
     }
 }
