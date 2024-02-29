@@ -12,51 +12,23 @@ class Program
 
         // Create an instance of your OctoprintConnection asynchronously
         var connectionTask = CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
-
-        // Wait for user input asynchronously
-        Task userInputTask = WaitForUserInputAsync();
-
-        // Wait for either the connection task or user input task to complete
-        await Task.WhenAny(connectionTask, userInputTask);
-
-        // If the user input task completed, cancel the connection attempt
-        if (!connectionTask.IsCompleted)
-        {
-            Console.WriteLine("Connection attempt canceled by user.");
+        // Get the OctoprintConnection instance
+        var connection = await connectionTask;
+        if (connection == null) {
+            Console.WriteLine("Failed to connect to printer. Exiting.");
             return;
         }
 
-        // Get the OctoprintConnection instance
-        var connection = await connectionTask;
-
-        if (connection == null) return;
-
-        Console.WriteLine("Connected!");
-
-
-        // Create an OctoprintPrinterTracker instance
+        // Create an OctoprintPrinterTracker instance and wait one second
         OctoprintPrinterTracker printerTracker = connection.Printers;
         printerTracker.BestBeforeMilisecs = 1000;
 
-        OctoprintPosTracker posTracker = connection.Position;
-
-
         // Subscribe to the event for printer status changes
         printerTracker.PrinterstateHandlers += PrinterStatusChanged;
-
-        // Call method to display printer status
         ShowPrinterStatus(printerTracker);
 
-        Console.WriteLine("Connecting to Printer. Listening to printer state changes...");
+        // Connect to the WebSocket to listen for printer status changes (program will block here until the WebSocket is closed)
         connection.WebsocketStart();
-
-
-        // Wait for user input (press Enter to exit)
-        Console.ReadLine();
-
-        // Stop the WebSocket when the program ends
-        connection.WebsocketStop();
-        Console.WriteLine("Closing connection...");
     }
 
     /// <summary>
@@ -69,8 +41,8 @@ class Program
         OctoprintFullPrinterState printerState = printerTracker.GetFullPrinterState();
         if (printerState == null) return;
         OctoprintTemperatureState tempState = printerState.TempState;
-        Console.WriteLine("Current Printer Status:");
-        Console.WriteLine(tempState.ToString());
+        Console.WriteLine("\nNew Message from Printer:");
+        Console.WriteLine("__\n"+tempState.ToString() + "__");
     }
 
     /// <summary>
@@ -80,7 +52,7 @@ class Program
     static void PrinterStatusChanged(OctoprintPrinterState newPrinterState)
     {
         Console.WriteLine("Printer status changed:");
-        Console.WriteLine(newPrinterState.ToString());
+        Console.WriteLine("__\n"+newPrinterState.ToString() + "\n__");
     }
 
     /// <summary>
@@ -108,23 +80,5 @@ class Program
         }
         return connection;
     }
-
-    static Task WaitForUserInputAsync()
-    {
-        // Use a TaskCompletionSource to enable asynchronous user input
-        var tcs = new TaskCompletionSource<object?>();
-
-        // Start a task that waits for user input
-        Task.Run(() =>
-        {
-            // When the user inputs something, mark the task as completed
-            Console.ReadLine();
-            tcs.SetResult(null);
-        });
-
-        // Return the TaskCompletionSource.Task to wait for user input
-        return tcs.Task;
-    }
-
 }
 
