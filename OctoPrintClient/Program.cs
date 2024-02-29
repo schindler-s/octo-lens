@@ -1,4 +1,5 @@
-﻿using OctoprintClient;
+﻿using Newtonsoft.Json.Linq;
+using OctoprintClient;
 
 class Program
 {
@@ -32,8 +33,13 @@ class Program
 
         Console.WriteLine("Connected!");
 
+
         // Create an OctoprintPrinterTracker instance
-        OctoprintPrinterTracker printerTracker = new OctoprintPrinterTracker(connection);
+        OctoprintPrinterTracker printerTracker = connection.Printers;
+        printerTracker.BestBeforeMilisecs = 1000;
+
+        OctoprintPosTracker posTracker = connection.Position;
+
 
         // Subscribe to the event for printer status changes
         printerTracker.PrinterstateHandlers += PrinterStatusChanged;
@@ -43,6 +49,7 @@ class Program
 
         Console.WriteLine("Connecting to Printer. Listening to printer state changes...");
         connection.WebsocketStart();
+
 
         // Wait for user input (press Enter to exit)
         Console.ReadLine();
@@ -56,12 +63,14 @@ class Program
     /// Displays the current printer status.
     /// </summary>
     /// <param name="printerTracker">OctoprintPrinterTracker instance.</param>
-    static void ShowPrinterStatus(OctoprintPrinterTracker printerTracker)
+    static  void ShowPrinterStatus(OctoprintPrinterTracker printerTracker)
     {
         // Get the current printer status
-        OctoprintPrinterState printerState = printerTracker.GetPrinterState();
+        OctoprintFullPrinterState printerState = printerTracker.GetFullPrinterState();
+        if (printerState == null) return;
+        OctoprintTemperatureState tempState = printerState.TempState;
         Console.WriteLine("Current Printer Status:");
-        Console.WriteLine(printerState.ToString());
+        Console.WriteLine(tempState.ToString());
     }
 
     /// <summary>
@@ -118,3 +127,4 @@ class Program
     }
 
 }
+
