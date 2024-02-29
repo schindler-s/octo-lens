@@ -506,6 +506,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1583047189}
     m_Modifications:
+    - target: {fileID: 4832342965904180054, guid: 9d2379eb232d3d643be000b17bc0b813, type: 3}
+      propertyPath: m_text
+      value: Octo-Lens
+      objectReference: {fileID: 0}
     - target: {fileID: 4832342966994725378, guid: 9d2379eb232d3d643be000b17bc0b813, type: 3}
       propertyPath: maxPanHorizontal
       value: 2.68
