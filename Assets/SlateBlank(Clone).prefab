@@ -1971,6 +1971,7 @@ GameObject:
   - component: {fileID: 4832342966681052994}
   - component: {fileID: 4832342966681052992}
   - component: {fileID: 4832342966681052995}
+  - component: {fileID: 3764384090930690142}
   m_Layer: 0
   m_Name: ContentBackPlate
   m_TagString: Untagged
@@ -2041,6 +2042,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3764384090930690142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4832342966681053021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e0ec8b5800dca54ebc075b66e9931ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textMesh: {fileID: 0}
 --- !u!1 &4832342966768382741
 GameObject:
   m_ObjectHideFlags: 0
@@ -3226,6 +3240,7 @@ GameObject:
   - component: {fileID: 4832342967581644993}
   - component: {fileID: 4832342967581644992}
   - component: {fileID: 4832342967581644995}
+  - component: {fileID: 2580195098807778440}
   m_Layer: 0
   m_Name: SlateBlank(Clone)
   m_TagString: Untagged
@@ -3478,6 +3493,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTetherWhenManipulating: 0
   IsBoundsHandles: 0
+--- !u!114 &2580195098807778440
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4832342967581644994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e0ec8b5800dca54ebc075b66e9931ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textMesh: {fileID: 0}
 --- !u!1 &4832342967586206489
 GameObject:
   m_ObjectHideFlags: 0
