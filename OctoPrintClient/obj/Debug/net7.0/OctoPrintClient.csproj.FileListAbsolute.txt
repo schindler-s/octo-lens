@@ -1,0 +1,6 @@
+C:\Users\PC\Documents\Uni\octo-lens\OctoPrintClient\obj\Debug\net7.0\OctoPrintClient.csproj.AssemblyReference.cache
+C:\Users\PC\Documents\Uni\octo-lens\OctoPrintClient\obj\Debug\net7.0\OctoPrintClient.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PC\Documents\Uni\octo-lens\OctoPrintClient\obj\Debug\net7.0\OctoPrintClient.AssemblyInfoInputs.cache
+C:\Users\PC\Documents\Uni\octo-lens\OctoPrintClient\obj\Debug\net7.0\OctoPrintClient.AssemblyInfo.cs
+C:\Users\PC\Documents\Uni\octo-lens\OctoPrintClient\obj\Debug\net7.0\OctoPrintClient.csproj.CoreCompileInputs.cache
+C:\Users\PC\Documents\Uni\octo-lens\OctoPrintClient\obj\Debug\net7.0\OctoPrintClient.sourcelink.json
