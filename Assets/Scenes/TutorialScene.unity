@@ -681,6 +681,14 @@ PrefabInstance:
       propertyPath: m_text
       value: Octo-Lens
       objectReference: {fileID: 0}
+    - target: {fileID: 4832342966681052995, guid: 9d2379eb232d3d643be000b17bc0b813, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1795eab4b467f734b971363d051529fb, type: 2}
+    - target: {fileID: 4832342966826860753, guid: 9d2379eb232d3d643be000b17bc0b813, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 1795eab4b467f734b971363d051529fb, type: 2}
     - target: {fileID: 4832342966994725376, guid: 9d2379eb232d3d643be000b17bc0b813, type: 3}
       propertyPath: m_Enabled
       value: 0
