@@ -40,9 +40,8 @@ class Program
         // Get the current printer status
         OctoprintFullPrinterState printerState = printerTracker.GetFullPrinterState();
         if (printerState == null) return;
-        OctoprintTemperatureState tempState = printerState.TempState;
         Console.WriteLine("\nNew Message from Printer:");
-        Console.WriteLine("__\n"+tempState.ToString() + "__");
+        Console.WriteLine("__\n"+printerState.ToString() + "__");
     }
 
     /// <summary>
