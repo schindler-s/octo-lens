@@ -178,6 +178,7 @@ GameObject:
   - component: {fileID: 634405888}
   - component: {fileID: 634405890}
   - component: {fileID: 634405889}
+  - component: {fileID: 634405891}
   m_Layer: 0
   m_Name: GUI Text
   m_TagString: Untagged
@@ -338,6 +339,19 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &634405891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 634405887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e0ec8b5800dca54ebc075b66e9931ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  textMesh: {fileID: 634405889}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
