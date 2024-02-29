@@ -6,7 +6,7 @@ using UnityEngine;
 public class DynamicTextChanger : MonoBehaviour
 {
     public TextMeshPro textMesh; // Reference to your Text Mesh Pro component
-    private float timer = 5f; // Time in seconds to wait before changing text
+    private float timer = 10f; // Time in seconds to wait before changing text
 
     private void Start()
     {
