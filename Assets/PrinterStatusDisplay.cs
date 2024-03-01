@@ -7,8 +7,8 @@ using System;
 
 public class PrinterStatusDisplay : MonoBehaviour
 {
-    public TextMeshPro textMeshStatus; // Reference to your Text Mesh Pro component
-    public TextMeshPro textMeshTemp; // Reference to your Text Mesh Pro component
+    public TextMeshPro textMeshLeft; // Reference to your Text Mesh Pro component
+    public TextMeshPro textMeshRight; // Reference to your Text Mesh Pro component
 
     // Set your OctoPrint server URL and API key
     private string octoPrintUrl = "http://192.168.0.104/";
@@ -21,7 +21,7 @@ public class PrinterStatusDisplay : MonoBehaviour
         connection = await CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
         if (connection == null)
         {
-            UpdateTextTemp("Failed to connect to printer. Exiting.");
+            UpdateTextLeft("Failed to connect to printer. Exiting.");
             return;
         }
 
@@ -35,50 +35,111 @@ public class PrinterStatusDisplay : MonoBehaviour
 
     void ShowPrinterStatus(OctoprintPrinterTracker printerTracker)
     {
-        OctoprintFullPrinterState printerState = printerTracker.GetFullPrinterState();
-        if (printerState == null) return;
-        OctoprintTemperatureState tempState = printerState.TempState;
-        UpdateTextTemp("Temperatures:\n" + tempState.ToString());
-        OctoprintPrinterState status = printerState.PrinterState;
-        UpdateTextStatus(printerState.ToString());
+
+
+
+
+
+        // Get the current printer status
+        OctoprintFullPrinterState printerFullState = printerTracker.GetFullPrinterState();
+        if (printerFullState == null) return;
+        var printerState = printerFullState.PrinterState;
+        var tempState = printerFullState.TempState;
+
+        var flags = printerState.Flags;
+
+        bool isOperational = flags.Operational;
+        bool hasError = flags.ClosedOrError;
+        PrinterState state;
+
+        if (flags.Printing)
+        {
+            state = PrinterState.printing;
+        }
+        else if (flags.Pausing)
+        {
+            state = PrinterState.pausing;
+
+        }
+        else if (flags.Cancelling)
+        {
+            state = PrinterState.canceling;
+        }
+        else if (flags.Ready)
+        {
+            state = PrinterState.ready;
+        }
+        else if (flags.ClosedOrError)
+        {
+            state = PrinterState.disconnected;
+        }
+        else
+        {
+            state = PrinterState.unknown;
+        }
+
+        var tools = tempState.Tools;
+        var bed = tempState.Bed;
+        var bedTempCurrent = formatTemp(bed.Actual);
+        var bedTempTarget = formatTemp(bed.Target);
+
+        string textLeft = "";
+        string textRight = "";
+
+        textLeft += $"Operational: {(isOperational ? "Yes" : "No")}" + "\n";
+        textLeft += "State: " + state + "\n";
+        textRight += $"Bed temperature(current): {bedTempCurrent}" + "\n";
+        textRight += $"Bed temperature(target): {bedTempTarget}" + "\n";
+
+        int toolNumber = 1;
+        foreach (var tool in tools)
+        {
+            string tempCurrent = formatTemp(tool.Actual);
+            string tempTarget = formatTemp(tool.Target);
+            textLeft +=  $"Tool {toolNumber}(current): {tempCurrent}" + "\n";
+            textLeft += $"Tool {toolNumber++}(target): {tempTarget}" + "\n";
+        }
+
+        UpdateTextLeft(textLeft);
+        UpdateTextRight(textRight);
     }
 
     void PrinterStatusChanged(OctoprintPrinterState newPrinterState)
     {
-        UpdateTextTemp("Printer status changed:\n" + newPrinterState.ToString());
+        UpdateTextLeft("Printer status changed:\n" + newPrinterState.ToString());
     }
 
     async Task<OctoprintConnection> CreateOctoprintConnectionAsync(string octoPrintUrl, string apiKey)
     {
-        UpdateTextTemp("Connecting to printer...");
+        UpdateTextRight("Connecting to printer...");
         try
         {
             OctoprintConnection connection = await Task.Run(() =>
             {
                 return new OctoprintConnection(octoPrintUrl, apiKey);
             });
-            UpdateTextTemp("Connected!");
+            UpdateTextLeft("Connected!");
             return connection;
         }
         catch (System.Exception ex)
         {
-            UpdateTextTemp($"Failed to connect to printer: {ex.Message}");
+            UpdateTextLeft($"Failed to connect to printer: {ex.Message}");
             return null;
         }
     }
 
     // Update the TextMeshPro text
-    void UpdateTextTemp(string text)
+    void UpdateTextRight(string text)
     {
-        if (textMeshTemp != null)
+        if (textMeshRight != null)
         {
-            textMeshTemp.text = text;
+            textMeshRight.text = text;
         }
     }
 
-    void UpdateTextStatus(string text)
+    void UpdateTextLeft(string text)
     {
-        if (textMeshStatus != null)
+        if (textMeshLeft != null)
         {
             // Split the text into an array of lines
             var lines = text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
@@ -89,7 +150,23 @@ public class PrinterStatusDisplay : MonoBehaviour
             // Join the lines back into a single string with newline characters
             var newText = string.Join(Environment.NewLine, first12Lines);
 
-            textMeshStatus.text = newText;
+            textMeshLeft.text = newText;
         }
     }
+
+    static string formatTemp(double temp)
+    {
+        return string.Format("{0:N1}°C", temp);
+    }
+}
+
+
+enum PrinterState
+{
+    ready,
+    printing,
+    canceling,
+    pausing,
+    disconnected,
+    unknown,
 }
