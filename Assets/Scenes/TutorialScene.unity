@@ -444,6 +444,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PressableButtonHoloLens2_64x64_Ja
       objectReference: {fileID: 0}
+    - target: {fileID: 5350167382246124729, guid: 16c68406779287b4abceb1371262aca6, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5350167382833626422, guid: 16c68406779287b4abceb1371262aca6, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -3689,7 +3693,7 @@ MonoBehaviour:
   OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8926097494889244624}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SendPrint, Assembly-CSharp
         m_MethodName: StartPrint
         m_Mode: 1
@@ -4108,7 +4112,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954316586279, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954316586286, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: m_RootOrder
