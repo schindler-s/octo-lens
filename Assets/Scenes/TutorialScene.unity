@@ -3153,7 +3153,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1788184891
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3629,7 +3629,7 @@ MonoBehaviour:
   iconSprite: {fileID: 21300000, guid: 20f25674b9512834f88938d45ed495d7, type: 3}
   iconQuadRenderer: {fileID: 0}
   iconQuadTextureNameID: _MainTex
-  iconQuadTexture: {fileID: 2800000, guid: bb1b4a9241fba2042a81428e917afd5d, type: 3}
+  iconQuadTexture: {fileID: 2800000, guid: d6a8d6d764af76740ad06383ee810941, type: 3}
   defaultButtonQuadMaterial: {fileID: 2100000, guid: fa419ab56051229449e3b813df8f295f, type: 2}
   iconSet: {fileID: 11400000, guid: 8b386ef895f7c924f8c4b03d1d3ed683, type: 2}
   defaultIconSet: {fileID: 11400000, guid: 8b386ef895f7c924f8c4b03d1d3ed683, type: 2}
@@ -3942,18 +3942,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1114799954316586279, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
   m_PrefabInstance: {fileID: 5510012263722782237}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4832342965703107387
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4832342965703107386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17799cb51ac84064bb4e15f2c574d423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4832342965703107396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4675,7 +4663,6 @@ GameObject:
   - component: {fileID: 8926097494889244622}
   - component: {fileID: 7485655612862938983}
   - component: {fileID: 1291805640360857078}
-  - component: {fileID: 8926097494889244624}
   m_Layer: 0
   m_Name: Print1
   m_TagString: Untagged
@@ -4683,18 +4670,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &8926097494889244624
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8926097494889244623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c291784e6814811459fef266da74010c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8926097494889244625
 MonoBehaviour:
   m_ObjectHideFlags: 0
