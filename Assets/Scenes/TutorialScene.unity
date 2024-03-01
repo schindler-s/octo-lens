@@ -914,13 +914,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1583047189}
     m_Modifications:
-    - target: {fileID: 1114799954150773415, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.2
-      objectReference: {fileID: 0}
+    - target: {fileID: 1114799953730106676, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 76aa6cf238c520c4ba000fb988ca3d4e, type: 2}
     - target: {fileID: 1114799954149169390, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1114799954150773414, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 76aa6cf238c520c4ba000fb988ca3d4e, type: 2}
+    - target: {fileID: 1114799954150773415, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954316586279, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: m_Name
@@ -928,7 +936,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954316586279, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: m_IsActive
-      value: 1
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954316586286, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
