@@ -15,22 +15,25 @@ public class PrinterStatusDisplay : MonoBehaviour
     private string apiKey = "34399E4785154539964185967FBE3EC7";
     private OctoprintConnection connection;
     private OctoprintPrinterTracker printerTracker;
+    OctoprintFileTracker fileTracker;
 
     async void Start()
     {
         connection = await CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
         if (connection == null)
         {
-            UpdateTextLeft("Failed to connect to printer. Exiting.");
+            updateTextStatus("Failed to connect to printer. Exiting.");
             return;
         }
 
         printerTracker = connection.Printers;
+        fileTracker = connection.Files;
+
         printerTracker.BestBeforeMilisecs = 1000;
         printerTracker.PrinterstateHandlers += PrinterStatusChanged;
-        ShowPrinterStatus(printerTracker);
 
-        // Removed WebSocket handling
+        ShowPrinterStatus(printerTracker);
+        ShowFiles(fileTracker);
     }
 
     void ShowPrinterStatus(OctoprintPrinterTracker printerTracker)
@@ -54,28 +57,28 @@ public class PrinterStatusDisplay : MonoBehaviour
 
         if (flags.Printing)
         {
-            state = PrinterState.printing;
+            state = PrinterState.Printing;
         }
         else if (flags.Pausing)
         {
-            state = PrinterState.pausing;
+            state = PrinterState.Pausing;
 
         }
         else if (flags.Cancelling)
         {
-            state = PrinterState.canceling;
+            state = PrinterState.Canceling;
         }
         else if (flags.Ready)
         {
-            state = PrinterState.ready;
+            state = PrinterState.Ready;
         }
         else if (flags.ClosedOrError)
         {
-            state = PrinterState.disconnected;
+            state = PrinterState.Disconnected;
         }
         else
         {
-            state = PrinterState.unknown;
+            state = PrinterState.Unknown;
         }
 
         var tools = tempState.Tools;
@@ -83,53 +86,77 @@ public class PrinterStatusDisplay : MonoBehaviour
         var bedTempCurrent = formatTemp(bed.Actual);
         var bedTempTarget = formatTemp(bed.Target);
 
-        string textLeft = "";
-        string textRight = "";
+        string textStatus = "";
+        string text = "";
 
-        textLeft += $"Operational: {(isOperational ? "Yes" : "No")}" + "\n";
-        textLeft += "State: " + state + "\n";
-        textRight += $"Bed temperature(current): {bedTempCurrent}" + "\n";
-        textRight += $"Bed temperature(target): {bedTempTarget}" + "\n";
+        textStatus += $"Operational: {(isOperational ? "Yes" : "No")}  ";
+        textStatus += "State: " + state;
+        text += $"Bed temperature(current): {bedTempCurrent}" + "\n";
+        text += $"Bed temperature(target): {bedTempTarget}" + "\n";
 
         int toolNumber = 1;
         foreach (var tool in tools)
         {
             string tempCurrent = formatTemp(tool.Actual);
             string tempTarget = formatTemp(tool.Target);
-            textLeft +=  $"Tool {toolNumber}(current): {tempCurrent}" + "\n";
-            textLeft += $"Tool {toolNumber++}(target): {tempTarget}" + "\n";
+            text +=  $"Tool {toolNumber}(current): {tempCurrent}" + "\n";
+            text += $"Tool {toolNumber++}(target): {tempTarget}" + "\n";
         }
 
-        UpdateTextLeft(textLeft);
-        UpdateTextRight(textRight);
+        updateTextStatus(textStatus);
+        updateText(text);
+    }
+
+    /// <summary>
+    /// Displays the printers files.
+    /// </summary>
+    /// <param name="fileTracker">OctoprintFileTracker instance.</param>
+    static void ShowFiles(OctoprintFileTracker fileTracker)
+    {
+        var mainFolder = fileTracker.GetFiles();
+
+        var files = mainFolder.octoprintFiles;
+
+        foreach (var file in files)
+        {
+            var name = file.Name;
+            var estimatedTimeInSeconds = file.GcodeAnalysis_estimatedPrintTime;
+            var successfulPrints = file.Print_success;
+            var prints = file.Print_failure + successfulPrints;
+            var lastTimePrinted = file.Print_last_date != 0 ? file.Print_last_date.ToString() : "-";
+            var minutes = estimatedTimeInSeconds / 60;
+            var seconds = estimatedTimeInSeconds % 60;
+            Console.WriteLine($"Estimated Time: {minutes}:{seconds} min");
+            Console.WriteLine($"Name: {name}\nSuccessful Prints: {successfulPrints}\nPrints: {prints}\nLast Time Printed: {lastTimePrinted}");
+        };
     }
 
     void PrinterStatusChanged(OctoprintPrinterState newPrinterState)
     {
-        UpdateTextLeft("Printer status changed:\n" + newPrinterState.ToString());
+        updateTextStatus("Printer status changed:\n" + newPrinterState.ToString());
     }
 
     async Task<OctoprintConnection> CreateOctoprintConnectionAsync(string octoPrintUrl, string apiKey)
     {
-        UpdateTextRight("Connecting to printer...");
+        updateText("Connecting to printer...");
         try
         {
             OctoprintConnection connection = await Task.Run(() =>
             {
                 return new OctoprintConnection(octoPrintUrl, apiKey);
             });
-            UpdateTextLeft("Connected!");
+            updateTextStatus("Connected!");
             return connection;
         }
         catch (System.Exception ex)
         {
-            UpdateTextLeft($"Failed to connect to printer: {ex.Message}");
+            updateTextStatus($"Failed to connect to printer: {ex.Message}");
             return null;
         }
     }
 
     // Update the TextMeshPro text
-    void UpdateTextRight(string text)
+    void updateText(string text)
     {
         if (textMeshRight != null)
         {
@@ -137,7 +164,7 @@ public class PrinterStatusDisplay : MonoBehaviour
         }
     }
 
-    void UpdateTextLeft(string text)
+    void updateTextStatus(string text)
     {
         if (textMeshLeft != null)
         {
@@ -163,10 +190,10 @@ public class PrinterStatusDisplay : MonoBehaviour
 
 enum PrinterState
 {
-    ready,
-    printing,
-    canceling,
-    pausing,
-    disconnected,
-    unknown,
+    Ready,
+    Printing,
+    Canceling,
+    Pausing,
+    Disconnected,
+    Unknown,
 }

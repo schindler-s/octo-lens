@@ -29,7 +29,7 @@ class Program
 
         OctoprintJobTracker jobTracker = connection.Jobs;
 
-        // ShowPrinterStatus(printerTracker);
+        ShowPrinterStatus(printerTracker);
         ShowFiles(fileTracker);
         // ShowJobs(jobTracker);
     }
@@ -123,13 +123,12 @@ class Program
             var estimatedTimeInSeconds = file.GcodeAnalysis_estimatedPrintTime;
             var successfulPrints = file.Print_success;
             var prints = file.Print_failure + successfulPrints;
-            var lastTimePrinted = file.Print_last_date;
+            var lastTimePrinted = file.Print_last_date != 0 ? file.Print_last_date.ToString() : "-";
             var minutes = estimatedTimeInSeconds / 60;
             var seconds = estimatedTimeInSeconds % 60;
-            Console.WriteLine($"{minutes}:{seconds} min");
-            Console.WriteLine($"{name}\n {estimatedTimeInSeconds}\n {successfulPrints}\n {prints}\n{lastTimePrinted}");
+            Console.WriteLine($"Estimated Time: {minutes}:{seconds} min");
+            Console.WriteLine($"Name: {name}\nSuccessful Prints: {successfulPrints}\nPrints: {prints}\nLast Time Printed: {lastTimePrinted}");
         };
-
     }
 
 
