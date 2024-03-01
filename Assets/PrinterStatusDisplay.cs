@@ -112,9 +112,9 @@ public class PrinterStatusDisplay : MonoBehaviour
             var lastTimePrinted = file.Print_last_date != 0 ? file.Print_last_date.ToString() : "-";
             var minutes = estimatedTimeInSeconds / 60;
             var seconds = estimatedTimeInSeconds % 60;
-            textFiles += $"Name: {name}\n";
-            textFiles += $"  Estimated Time: {minutes}:{seconds} min" + "\n";
-            textFiles += $"  Successful Prints: {successfulPrints}/{prints}\n";
+            textFiles += $"{name}\n";
+            textFiles += $"    Estimated Time: {minutes}:{seconds} min" + "\n";
+            textFiles += $"    Successful Prints: {successfulPrints}/{prints}\n";
         };
 
         updateTextFiles(textFiles);
