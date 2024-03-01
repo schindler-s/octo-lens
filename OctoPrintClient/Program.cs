@@ -29,9 +29,9 @@ class Program
 
         OctoprintJobTracker jobTracker = connection.Jobs;
 
-        ShowPrinterStatus(printerTracker);
-        ShowFiles(fileTracker);
-        // ShowJobs(jobTracker);
+        // ShowPrinterStatus(printerTracker);
+        // ShowFiles(fileTracker);
+        ShowJobs(printerTracker, jobTracker);
     }
 
     /// <summary>
@@ -137,11 +137,21 @@ class Program
     /// Displays the printers job.
     /// </summary>
     /// <param name="jobTracker">OctoprintJobTracker instance.</param>
-    static void ShowJobs(OctoprintJobTracker jobTracker)
+    static void ShowJobs(OctoprintPrinterTracker printerTracker, OctoprintJobTracker jobTracker)
     {
-        var jobs = jobTracker.GetProgress();
+        var info = jobTracker.GetInfo();
+        var progress = jobTracker.GetProgress();
 
-        Console.WriteLine(jobs.ToString());
+        var isPrinting = printerTracker.GetPrinterState().Flags.Printing;
+
+
+        if (isPrinting)
+        {
+            Console.WriteLine(info);
+
+        }
+
+        Console.WriteLine(progress);
 
     }
 
