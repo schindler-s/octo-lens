@@ -29,9 +29,9 @@ class Program
 
         OctoprintJobTracker jobTracker = connection.Jobs;
 
-        ShowPrinterStatus(printerTracker);
+        // ShowPrinterStatus(printerTracker);
         ShowFiles(fileTracker);
-        ShowJobs(jobTracker);
+        // ShowJobs(jobTracker);
     }
 
     /// <summary>
@@ -113,11 +113,25 @@ class Program
     /// <param name="fileTracker">OctoprintFileTracker instance.</param>
     static void ShowFiles(OctoprintFileTracker fileTracker)
     {
-        var files = fileTracker.GetFiles();
+        var mainFolder = fileTracker.GetFiles();
 
-        Console.WriteLine(files);
+        var files = mainFolder.octoprintFiles;
+
+        foreach (var file in files)
+        {
+            var name = file.Name;
+            var estimatedTimeInSeconds = file.GcodeAnalysis_estimatedPrintTime;
+            var successfulPrints = file.Print_success;
+            var prints = file.Print_failure + successfulPrints;
+            var lastTimePrinted = file.Print_last_date;
+            var minutes = estimatedTimeInSeconds / 60;
+            var seconds = estimatedTimeInSeconds % 60;
+            Console.WriteLine($"{minutes}:{seconds} min");
+            Console.WriteLine($"{name}\n {estimatedTimeInSeconds}\n {successfulPrints}\n {prints}\n{lastTimePrinted}");
+        };
 
     }
+
 
 
     /// <summary>
