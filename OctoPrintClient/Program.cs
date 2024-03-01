@@ -31,7 +31,7 @@ class Program
 
         ShowPrinterStatus(printerTracker);
         ShowFiles(fileTracker);
-        // ShowJobs(jobTracker);
+        ShowJobs(jobTracker);
     }
 
     /// <summary>

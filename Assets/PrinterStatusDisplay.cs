@@ -2,8 +2,6 @@ using UnityEngine;
 using System.Threading.Tasks;
 using TMPro; // Add the TextMesh Pro namespace
 using OctoprintClient;
-using System.Linq;
-using System;
 
 public class PrinterStatusDisplay : MonoBehaviour
 {
@@ -16,27 +14,31 @@ public class PrinterStatusDisplay : MonoBehaviour
     private string apiKey = "34399E4785154539964185967FBE3EC7";
     private OctoprintConnection connection;
     private OctoprintPrinterTracker printerTracker;
+    private OctoprintJobTracker jobTracker;
     OctoprintFileTracker fileTracker;
 
-    async void Start()
+    // Start is called before the first frame update
+    void Start()
     {
-        connection = await CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
-        if (connection == null)
-        {
-            updateTextStatus("Failed to connect to printer. Exiting.");
-            return;
-        }
-
-        printerTracker = connection.Printers;
-        fileTracker = connection.Files;
-
-        printerTracker.BestBeforeMilisecs = 1000;
-        printerTracker.PrinterstateHandlers += PrinterStatusChanged;
-
-        ShowPrinterStatus(printerTracker, fileTracker);
+        InitiateConnection();
     }
 
-    void ShowPrinterStatus(OctoprintPrinterTracker printerTracker, OctoprintFileTracker fileTracker)
+    public void InitiateConnection()
+    {
+        Task.Run(async () =>
+        {
+            connection = await CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
+            if (connection != null)
+            {
+                fileTracker = connection.Files;
+                // Assuming you want to select the file on start, otherwise move this into the StartPrint method
+                fileTracker.Select("cube_tiny.gcode");
+            }
+        });
+    }
+
+
+    void ShowPrinterStatus(OctoprintPrinterTracker printerTracker, OctoprintFileTracker fileTracker, OctoprintJobTracker jobTracker)
     {
         // Get the current printer status
         OctoprintFullPrinterState printerFullState = printerTracker.GetFullPrinterState();
@@ -96,8 +98,17 @@ public class PrinterStatusDisplay : MonoBehaviour
             string tempCurrent = formatTemp(tool.Actual);
             string tempTarget = formatTemp(tool.Target);
             text +=  $"Tool {toolNumber}(current): {tempCurrent}" + "\n";
-            text += $"Tool {toolNumber++}(target): {tempTarget}" + "\n";
+            text += $"Tool {toolNumber++}(target): {tempTarget}" + "\n\n\n";
         }
+
+        var info = jobTracker.GetInfo();
+        var progress = jobTracker.GetProgress();
+        var isPrinting = printerTracker.GetPrinterState().Flags.Printing;
+        if (isPrinting)
+        {
+            text += info + "\n";
+        }
+        text += progress + "\n";
 
         var mainFolder = fileTracker.GetFiles();
         var files = mainFolder.octoprintFiles;
@@ -114,7 +125,7 @@ public class PrinterStatusDisplay : MonoBehaviour
             var seconds = estimatedTimeInSeconds % 60;
             textFiles += $"{name}\n";
             textFiles += $"    Estimated Time: {minutes}:{seconds} min" + "\n";
-            textFiles += $"    Successful Prints: {successfulPrints}/{prints}\n";
+            textFiles += $"    Successful Prints: {successfulPrints}/{prints}\n\n";
         };
 
         updateTextFiles(textFiles);
