@@ -7,8 +7,9 @@ using System;
 
 public class PrinterStatusDisplay : MonoBehaviour
 {
-    public TextMeshPro textMeshLeft; // Reference to your Text Mesh Pro component
-    public TextMeshPro textMeshRight; // Reference to your Text Mesh Pro component
+    public TextMeshPro textMeshStatus; // Reference to your Text Mesh Pro component
+    public TextMeshPro textMeshData; // Reference to your Text Mesh Pro component
+    public TextMeshPro textMeshFiles; // Reference to your Text Mesh Pro component
 
     // Set your OctoPrint server URL and API key
     private string octoPrintUrl = "http://192.168.0.104/";
@@ -32,17 +33,11 @@ public class PrinterStatusDisplay : MonoBehaviour
         printerTracker.BestBeforeMilisecs = 1000;
         printerTracker.PrinterstateHandlers += PrinterStatusChanged;
 
-        ShowPrinterStatus(printerTracker);
-        ShowFiles(fileTracker);
+        ShowPrinterStatus(printerTracker, fileTracker);
     }
 
-    void ShowPrinterStatus(OctoprintPrinterTracker printerTracker)
+    void ShowPrinterStatus(OctoprintPrinterTracker printerTracker, OctoprintFileTracker fileTracker)
     {
-
-
-
-
-
         // Get the current printer status
         OctoprintFullPrinterState printerFullState = printerTracker.GetFullPrinterState();
         if (printerFullState == null) return;
@@ -88,8 +83,9 @@ public class PrinterStatusDisplay : MonoBehaviour
 
         string textStatus = "";
         string text = "";
+        string textFiles = "";
 
-        textStatus += $"Operational: {(isOperational ? "Yes" : "No")}  ";
+        textStatus += $"Operational: {(isOperational ? "Yes" : "No")}      ";
         textStatus += "State: " + state;
         text += $"Bed temperature(current): {bedTempCurrent}" + "\n";
         text += $"Bed temperature(target): {bedTempTarget}" + "\n";
@@ -103,22 +99,12 @@ public class PrinterStatusDisplay : MonoBehaviour
             text += $"Tool {toolNumber++}(target): {tempTarget}" + "\n";
         }
 
-        updateTextStatus(textStatus);
-        updateText(text);
-    }
-
-    /// <summary>
-    /// Displays the printers files.
-    /// </summary>
-    /// <param name="fileTracker">OctoprintFileTracker instance.</param>
-    static void ShowFiles(OctoprintFileTracker fileTracker)
-    {
         var mainFolder = fileTracker.GetFiles();
-
         var files = mainFolder.octoprintFiles;
 
         foreach (var file in files)
         {
+            
             var name = file.Name;
             var estimatedTimeInSeconds = file.GcodeAnalysis_estimatedPrintTime;
             var successfulPrints = file.Print_success;
@@ -126,10 +112,16 @@ public class PrinterStatusDisplay : MonoBehaviour
             var lastTimePrinted = file.Print_last_date != 0 ? file.Print_last_date.ToString() : "-";
             var minutes = estimatedTimeInSeconds / 60;
             var seconds = estimatedTimeInSeconds % 60;
-            Console.WriteLine($"Estimated Time: {minutes}:{seconds} min");
-            Console.WriteLine($"Name: {name}\nSuccessful Prints: {successfulPrints}\nPrints: {prints}\nLast Time Printed: {lastTimePrinted}");
+            textFiles += $"Name: {name}\n";
+            textFiles += $"  Estimated Time: {minutes}:{seconds} min" + "\n";
+            textFiles += $"  Successful Prints: {successfulPrints}/{prints}\n";
         };
+
+        updateTextFiles(textFiles);
+        updateTextStatus(textStatus);
+        updateText(text);
     }
+
 
     void PrinterStatusChanged(OctoprintPrinterState newPrinterState)
     {
@@ -158,26 +150,25 @@ public class PrinterStatusDisplay : MonoBehaviour
     // Update the TextMeshPro text
     void updateText(string text)
     {
-        if (textMeshRight != null)
+        if (textMeshData != null)
         {
-            textMeshRight.text = text;
+            textMeshData.text = text;
         }
     }
 
     void updateTextStatus(string text)
     {
-        if (textMeshLeft != null)
+        if (textMeshStatus != null)
         {
-            // Split the text into an array of lines
-            var lines = text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+            textMeshStatus.text = text;
+        }
+    }
 
-            // Take the first 12 lines, if there are that many
-            var first12Lines = lines.Take(12);
-
-            // Join the lines back into a single string with newline characters
-            var newText = string.Join(Environment.NewLine, first12Lines);
-
-            textMeshLeft.text = newText;
+    void updateTextFiles(string text)
+    {
+        if (textMeshFiles != null)
+        {
+            textMeshFiles.text = text;
         }
     }
 
