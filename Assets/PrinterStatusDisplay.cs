@@ -5,7 +5,8 @@ using OctoprintClient;
 
 public class PrinterStatusDisplay : MonoBehaviour
 {
-    public TextMeshPro textMesh; // Reference to your Text Mesh Pro component
+    public TextMeshPro textMeshStatus; // Reference to your Text Mesh Pro component
+    public TextMeshPro textMeshTemp; // Reference to your Text Mesh Pro component
 
     // Set your OctoPrint server URL and API key
     private string octoPrintUrl = "http://192.168.0.104/";
@@ -18,7 +19,7 @@ public class PrinterStatusDisplay : MonoBehaviour
         connection = await CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
         if (connection == null)
         {
-            UpdateText("Failed to connect to printer. Exiting.");
+            UpdateTextTemp("Failed to connect to printer. Exiting.");
             return;
         }
 
@@ -35,39 +36,49 @@ public class PrinterStatusDisplay : MonoBehaviour
         OctoprintFullPrinterState printerState = printerTracker.GetFullPrinterState();
         if (printerState == null) return;
         OctoprintTemperatureState tempState = printerState.TempState;
-        UpdateText("\nNew Message from Printer:\n" + tempState.ToString());
+        UpdateTextTemp("Temperatures:\n" + tempState.ToString());
+        OctoprintPrinterState status = printerState.PrinterState;
+        UpdateTextStatus(printerState.ToString());
     }
 
     void PrinterStatusChanged(OctoprintPrinterState newPrinterState)
     {
-        UpdateText("Printer status changed:\n" + newPrinterState.ToString());
+        UpdateTextTemp("Printer status changed:\n" + newPrinterState.ToString());
     }
 
     async Task<OctoprintConnection> CreateOctoprintConnectionAsync(string octoPrintUrl, string apiKey)
     {
-        UpdateText("Connecting to printer...");
+        UpdateTextTemp("Connecting to printer...");
         try
         {
             OctoprintConnection connection = await Task.Run(() =>
             {
                 return new OctoprintConnection(octoPrintUrl, apiKey);
             });
-            UpdateText("Connected!");
+            UpdateTextTemp("Connected!");
             return connection;
         }
         catch (System.Exception ex)
         {
-            UpdateText($"Failed to connect to printer: {ex.Message}");
+            UpdateTextTemp($"Failed to connect to printer: {ex.Message}");
             return null;
         }
     }
 
     // Update the TextMeshPro text
-    void UpdateText(string text)
+    void UpdateTextTemp(string text)
     {
-        if (textMesh != null)
+        if (textMeshTemp != null)
         {
-            textMesh.text = text;
+            textMeshTemp.text = text;
+        }
+    }
+
+    void UpdateTextStatus(string text)
+    {
+        if (textMeshStatus != null)
+        {
+            textMeshStatus.text = text;
         }
     }
 }
