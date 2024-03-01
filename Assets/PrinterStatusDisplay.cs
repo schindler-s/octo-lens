@@ -34,7 +34,13 @@ public class PrinterStatusDisplay : MonoBehaviour
         printerTracker.BestBeforeMilisecs = 1000;
         printerTracker.PrinterstateHandlers += PrinterStatusChanged;
 
-        ShowPrinterStatus(printerTracker, fileTracker, jobTracker);
+        // Start the loop to repeatedly call ShowPrinterStatus every 5 seconds
+        while (true)
+        {
+            ShowPrinterStatus(printerTracker, fileTracker, jobTracker);
+            // Wait for 5 seconds before the next call
+            await Task.Delay(5000);
+        }
     }
 
     void ShowPrinterStatus(OctoprintPrinterTracker printerTracker, OctoprintFileTracker fileTracker, OctoprintJobTracker jobTracker)
@@ -103,6 +109,7 @@ public class PrinterStatusDisplay : MonoBehaviour
         var info = jobTracker.GetInfo();
         var progress = jobTracker.GetProgress();
         var isPrinting = printerTracker.GetPrinterState().Flags.Printing;
+        text += "Jobs:\n";
         if (isPrinting)
         {
             text += info + "\n";
