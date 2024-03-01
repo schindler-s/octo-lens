@@ -27,6 +27,10 @@ class Program
 
         OctoprintFileTracker fileTracker = connection.Files;
 
+        // fileTracker.Select("cube_tiny.gcode");
+        // fileTracker.Select("cube_small.gcode");
+        // fileTracker.Select("cube_medium.gcode");
+
         OctoprintJobTracker jobTracker = connection.Jobs;
 
         // ShowPrinterStatus(printerTracker);
@@ -119,6 +123,7 @@ class Program
 
         foreach (var file in files)
         {
+
             var name = file.Name;
             var estimatedTimeInSeconds = file.GcodeAnalysis_estimatedPrintTime;
             var successfulPrints = file.Print_success;
@@ -152,7 +157,10 @@ class Program
         }
 
         Console.WriteLine(progress);
+    }
 
+    static void StartJob(OctoprintJobTracker jobTracker, String path)
+    {
     }
 
     /// <summary>
