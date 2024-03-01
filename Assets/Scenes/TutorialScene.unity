@@ -1087,6 +1087,20 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 5350167382246124729, guid: 16c68406779287b4abceb1371262aca6, type: 3}
   m_PrefabInstance: {fileID: 490014080}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2119027958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119027950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8f56a8889e1daf409925f03a016c77a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileText: {fileID: 2119027950}
+  temperatureText: {fileID: 4832342965703107386}
 --- !u!4 &4832342965703107379 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1114799954316586286, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
@@ -1229,7 +1243,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954316586279, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954316586286, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: m_RootOrder
@@ -1302,7 +1316,7 @@ PrefabInstance:
     - target: {fileID: 1114799954321458919, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 11500000, guid: e8f56a8889e1daf409925f03a016c77a, type: 3}
+      objectReference: {fileID: 90372965}
     - target: {fileID: 1114799954321458919, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -1317,7 +1331,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954321458919, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: 
+      value: ToggleTextObjects
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954321458919, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
@@ -1325,7 +1339,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954321458919, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: 
+      value: ToggleText, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954321458919, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
@@ -1341,7 +1355,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954321458919, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: 
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1114799954321458919, guid: 32ef9172f6d60ff46b34bcc4ba166a3a, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
