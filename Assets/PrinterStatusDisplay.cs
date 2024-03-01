@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using TMPro; // Add the TextMesh Pro namespace
 using OctoprintClient;
 
+
 public class PrinterStatusDisplay : MonoBehaviour
 {
     public TextMeshPro textMeshStatus; // Reference to your Text Mesh Pro component
@@ -17,26 +18,24 @@ public class PrinterStatusDisplay : MonoBehaviour
     private OctoprintJobTracker jobTracker;
     OctoprintFileTracker fileTracker;
 
-    // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
-        InitiateConnection();
-    }
-
-    public void InitiateConnection()
-    {
-        Task.Run(async () =>
+        connection = await CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
+        if (connection == null)
         {
-            connection = await CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
-            if (connection != null)
-            {
-                fileTracker = connection.Files;
-                // Assuming you want to select the file on start, otherwise move this into the StartPrint method
-                fileTracker.Select("cube_tiny.gcode");
-            }
-        });
-    }
+            updateTextStatus("Failed to connect to printer. Exiting.");
+            return;
+        }
 
+        printerTracker = connection.Printers;
+        fileTracker = connection.Files;
+        jobTracker = connection.Jobs;
+
+        printerTracker.BestBeforeMilisecs = 1000;
+        printerTracker.PrinterstateHandlers += PrinterStatusChanged;
+
+        ShowPrinterStatus(printerTracker, fileTracker, jobTracker);
+    }
 
     void ShowPrinterStatus(OctoprintPrinterTracker printerTracker, OctoprintFileTracker fileTracker, OctoprintJobTracker jobTracker)
     {
