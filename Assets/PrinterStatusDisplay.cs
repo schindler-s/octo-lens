@@ -103,7 +103,7 @@ public class PrinterStatusDisplay : MonoBehaviour
             string tempCurrent = formatTemp(tool.Actual);
             string tempTarget = formatTemp(tool.Target);
             text +=  $"Tool {toolNumber}(current): {tempCurrent}" + "\n";
-            text += $"Tool {toolNumber++}(target): {tempTarget}" + "\n\n\n";
+            text += $"Tool {toolNumber++}(target): {tempTarget}" + "\n\n";
         }
 
         var info = jobTracker.GetInfo();
@@ -112,9 +112,10 @@ public class PrinterStatusDisplay : MonoBehaviour
         text += "Jobs:\n";
         if (isPrinting)
         {
-            text += info + "\n";
+            text += "EstimatedPrinttime: " + info.EstimatedPrintTime + "\nAt File: " + info.File + "Using Fillament: \n" + info.Filament + "\n";
         }
         text += progress + "\n";
+
 
         var mainFolder = fileTracker.GetFiles();
         var files = mainFolder.octoprintFiles;
