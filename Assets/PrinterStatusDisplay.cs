@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Threading.Tasks;
 using TMPro; // Add the TextMesh Pro namespace
 using OctoprintClient;
+using System.Linq;
+using System;
 
 public class PrinterStatusDisplay : MonoBehaviour
 {
@@ -78,7 +80,16 @@ public class PrinterStatusDisplay : MonoBehaviour
     {
         if (textMeshStatus != null)
         {
-            textMeshStatus.text = text;
+            // Split the text into an array of lines
+            var lines = text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+            // Take the first 12 lines, if there are that many
+            var first12Lines = lines.Take(12);
+
+            // Join the lines back into a single string with newline characters
+            var newText = string.Join(Environment.NewLine, first12Lines);
+
+            textMeshStatus.text = newText;
         }
     }
 }
