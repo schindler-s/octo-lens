@@ -6,6 +6,9 @@ using UnityEngine;
 
 public class SendPrint : MonoBehaviour
 {
+
+    // TODO use service after refactor documented in PrinterStatusDisplay
+    //  does not seem to work if trying to connect to the printer twice
     private string octoPrintUrl = "http://192.168.0.104/";
     private string apiKey = "34399E4785154539964185967FBE3EC7";
     private OctoprintConnection connection;

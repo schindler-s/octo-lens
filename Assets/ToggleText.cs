@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Allows to toggle between two text objects
+/// </summary>
 public class ToggleText : MonoBehaviour
 {
     public GameObject fileText;
