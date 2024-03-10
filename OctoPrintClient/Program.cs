@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Diagnostics;
+using Newtonsoft.Json.Linq;
 using OctoprintClient;
 
 class Program
@@ -12,65 +13,136 @@ class Program
 
         // Create an instance of your OctoprintConnection asynchronously
         var connectionTask = CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
-
-        // Wait for user input asynchronously
-        Task userInputTask = WaitForUserInputAsync();
-
-        // Wait for either the connection task or user input task to complete
-        await Task.WhenAny(connectionTask, userInputTask);
-
-        // If the user input task completed, cancel the connection attempt
-        if (!connectionTask.IsCompleted)
+        // Get the OctoprintConnection instance
+        var connection = await connectionTask;
+        if (connection == null)
         {
-            Console.WriteLine("Connection attempt canceled by user.");
+            Console.WriteLine("Failed to connect to printer. Exiting.");
             return;
         }
 
-        // Get the OctoprintConnection instance
-        var connection = await connectionTask;
-
-        if (connection == null) return;
-
-        Console.WriteLine("Connected!");
-
-
-        // Create an OctoprintPrinterTracker instance
+        // Create an OctoprintPrinterTracker instance and wait one second
         OctoprintPrinterTracker printerTracker = connection.Printers;
         printerTracker.BestBeforeMilisecs = 1000;
 
-        OctoprintPosTracker posTracker = connection.Position;
+        OctoprintFileTracker fileTracker = connection.Files;
 
+        OctoprintJobTracker jobTracker = connection.Jobs;
 
-        // Subscribe to the event for printer status changes
-        printerTracker.PrinterstateHandlers += PrinterStatusChanged;
-
-        // Call method to display printer status
         ShowPrinterStatus(printerTracker);
-
-        Console.WriteLine("Connecting to Printer. Listening to printer state changes...");
-        connection.WebsocketStart();
-
-
-        // Wait for user input (press Enter to exit)
-        Console.ReadLine();
-
-        // Stop the WebSocket when the program ends
-        connection.WebsocketStop();
-        Console.WriteLine("Closing connection...");
+        ShowFiles(fileTracker);
+        ShowJobs(jobTracker);
     }
 
     /// <summary>
     /// Displays the current printer status.
     /// </summary>
     /// <param name="printerTracker">OctoprintPrinterTracker instance.</param>
-    static  void ShowPrinterStatus(OctoprintPrinterTracker printerTracker)
+    static void ShowPrinterStatus(OctoprintPrinterTracker printerTracker)
     {
         // Get the current printer status
-        OctoprintFullPrinterState printerState = printerTracker.GetFullPrinterState();
-        if (printerState == null) return;
-        OctoprintTemperatureState tempState = printerState.TempState;
-        Console.WriteLine("Current Printer Status:");
-        Console.WriteLine(tempState.ToString());
+        OctoprintFullPrinterState printerFullState = printerTracker.GetFullPrinterState();
+        if (printerFullState == null) return;
+        var printerState = printerFullState.PrinterState;
+        var tempState = printerFullState.TempState;
+        var flags = printerState.Flags;
+
+        bool isOperational = flags.Operational;
+        bool hasError = flags.ClosedOrError;
+        PrinterState state;
+
+        if (flags.Printing)
+        {
+            state = PrinterState.printing;
+
+        }
+        else if (flags.Pausing)
+        {
+            state = PrinterState.pausing;
+
+        }
+        else if (flags.Cancelling)
+        {
+            state = PrinterState.canceling;
+        }
+        else if (flags.Ready)
+        {
+            state = PrinterState.ready;
+        }
+        else if (flags.ClosedOrError)
+        {
+            state = PrinterState.disconnected;
+        }
+        else
+        {
+            state = PrinterState.unknown;
+        }
+
+        var tools = tempState.Tools;
+        var bed = tempState.Bed;
+        var bedTempCurrent = formatTemp(bed.Actual);
+        var bedTempTarget = formatTemp(bed.Target);
+
+        Console.WriteLine($"Operational: {(isOperational ? "Yes" : "No")}");
+        Console.WriteLine("State: " + state);
+        Console.WriteLine($"Bed temperature(current): {bedTempCurrent}");
+        Console.WriteLine($"Bed temperature(target): {bedTempTarget}");
+
+        int toolNumber = 1;
+        foreach (var tool in tools)
+        {
+
+            string tempCurrent = formatTemp(tool.Actual);
+            string tempTarget = formatTemp(tool.Target);
+            Console.WriteLine($"Tool {toolNumber}(current): {tempCurrent}");
+            Console.WriteLine($"Tool {toolNumber++}(target): {tempTarget}");
+        }
+
+
+
+
+
+
+        // Console.WriteLine("__\n" + printerFullState.ToString() + "__");
+    }
+
+
+    /// <summary>
+    /// Displays the printers files.
+    /// </summary>
+    /// <param name="fileTracker">OctoprintFileTracker instance.</param>
+    static void ShowFiles(OctoprintFileTracker fileTracker)
+    {
+        var mainFolder = fileTracker.GetFiles();
+
+        var files = mainFolder.octoprintFiles;
+
+        foreach (var file in files)
+        {
+            var name = file.Name;
+            var estimatedTimeInSeconds = file.GcodeAnalysis_estimatedPrintTime;
+            var successfulPrints = file.Print_success;
+            var prints = file.Print_failure + successfulPrints;
+            var lastTimePrinted = file.Print_last_date != 0 ? file.Print_last_date.ToString() : "-";
+            var minutes = estimatedTimeInSeconds / 60;
+            var seconds = estimatedTimeInSeconds % 60;
+            Console.WriteLine($"Estimated Time: {minutes}:{seconds} min");
+            Console.WriteLine($"Name: {name}\nSuccessful Prints: {successfulPrints}\nPrints: {prints}\nLast Time Printed: {lastTimePrinted}");
+        };
+    }
+
+
+
+    /// <summary>
+    /// Displays the printers job.
+    /// </summary>
+    /// <param name="jobTracker">OctoprintJobTracker instance.</param>
+    static void ShowJobs(OctoprintJobTracker jobTracker)
+    {
+        var jobs = jobTracker.GetProgress();
+
+        Console.WriteLine(jobs.ToString());
+
     }
 
     /// <summary>
@@ -80,7 +152,7 @@ class Program
     static void PrinterStatusChanged(OctoprintPrinterState newPrinterState)
     {
         Console.WriteLine("Printer status changed:");
-        Console.WriteLine(newPrinterState.ToString());
+        Console.WriteLine("__\n" + newPrinterState.ToString() + "\n__");
     }
 
     /// <summary>
@@ -109,22 +181,19 @@ class Program
         return connection;
     }
 
-    static Task WaitForUserInputAsync()
+    static string formatTemp(double temp)
     {
-        // Use a TaskCompletionSource to enable asynchronous user input
-        var tcs = new TaskCompletionSource<object?>();
-
-        // Start a task that waits for user input
-        Task.Run(() =>
-        {
-            // When the user inputs something, mark the task as completed
-            Console.ReadLine();
-            tcs.SetResult(null);
-        });
-
-        // Return the TaskCompletionSource.Task to wait for user input
-        return tcs.Task;
+        return string.Format("{0:N1}°C", temp);
     }
-
 }
 
+
+enum PrinterState
+{
+    ready,
+    printing,
+    canceling,
+    pausing,
+    disconnected,
+    unknown,
+}
