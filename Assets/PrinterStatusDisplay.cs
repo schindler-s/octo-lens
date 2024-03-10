@@ -1,26 +1,35 @@
 using UnityEngine;
 using System.Threading.Tasks;
-using TMPro; // Add the TextMesh Pro namespace
+using TMPro;
 using OctoprintClient;
 
 
 public class PrinterStatusDisplay : MonoBehaviour
 {
-    public TextMeshPro textMeshStatus; // Reference to your Text Mesh Pro component
-    public TextMeshPro textMeshData; // Reference to your Text Mesh Pro component
-    public TextMeshPro textMeshFiles; // Reference to your Text Mesh Pro component
+    /// <summary>
+    /// text mesh to show printer status (e.g. ready, pausing,...)
+    /// </summary>
+    public TextMeshPro textMeshStatus;
+    /// <summary>
+    /// text mesh to show various informatoin about printer (temperatur, jobs,...)
+    /// </summary>
+    public TextMeshPro textMeshData;
+    /// <summary>
+    /// text mesh to show printer files
+    /// </summary>
+    public TextMeshPro textMeshFiles;
 
-    // Set your OctoPrint server URL and API key
+    // TODO make OctoPrint connection a service to be available from whole application
     private string octoPrintUrl = "http://192.168.0.104/";
     private string apiKey = "34399E4785154539964185967FBE3EC7";
     private OctoprintConnection connection;
     private OctoprintPrinterTracker printerTracker;
     private OctoprintJobTracker jobTracker;
-    OctoprintFileTracker fileTracker;
+    private OctoprintFileTracker fileTracker;
 
     async void Start()
     {
-        connection = await CreateOctoprintConnectionAsync(octoPrintUrl, apiKey);
+        connection = await Connect(octoPrintUrl, apiKey);
         if (connection == null)
         {
             updateTextStatus("Failed to connect to printer. Exiting.");
@@ -31,8 +40,8 @@ public class PrinterStatusDisplay : MonoBehaviour
         fileTracker = connection.Files;
         jobTracker = connection.Jobs;
 
+        // needed to be able to get full printer state
         printerTracker.BestBeforeMilisecs = 1000;
-        printerTracker.PrinterstateHandlers += PrinterStatusChanged;
 
         // Start the loop to repeatedly call ShowPrinterStatus every 5 seconds
         while (true)
@@ -55,33 +64,7 @@ public class PrinterStatusDisplay : MonoBehaviour
 
         bool isOperational = flags.Operational;
         bool hasError = flags.ClosedOrError;
-        PrinterState state;
-
-        if (flags.Printing)
-        {
-            state = PrinterState.Printing;
-        }
-        else if (flags.Pausing)
-        {
-            state = PrinterState.Pausing;
-
-        }
-        else if (flags.Cancelling)
-        {
-            state = PrinterState.Canceling;
-        }
-        else if (flags.Ready)
-        {
-            state = PrinterState.Ready;
-        }
-        else if (flags.ClosedOrError)
-        {
-            state = PrinterState.Disconnected;
-        }
-        else
-        {
-            state = PrinterState.Unknown;
-        }
+        PrinterState state = getStateFromFlags(flags);
 
         var tools = tempState.Tools;
         var bed = tempState.Bed;
@@ -98,11 +81,12 @@ public class PrinterStatusDisplay : MonoBehaviour
         text += $"Bed temperature(target): {bedTempTarget}" + "\n";
 
         int toolNumber = 1;
+        // get actual and target temp for each tool
         foreach (var tool in tools)
         {
             string tempCurrent = formatTemp(tool.Actual);
             string tempTarget = formatTemp(tool.Target);
-            text +=  $"Tool {toolNumber}(current): {tempCurrent}" + "\n";
+            text += $"Tool {toolNumber}(current): {tempCurrent}" + "\n";
             text += $"Tool {toolNumber++}(target): {tempTarget}" + "\n\n";
         }
 
@@ -110,6 +94,8 @@ public class PrinterStatusDisplay : MonoBehaviour
         var progress = jobTracker.GetProgress();
         var isPrinting = printerTracker.GetPrinterState().Flags.Printing;
         text += "Jobs:\n";
+
+        // show current job info if printer is currently printing
         if (isPrinting)
         {
             text += "EstimatedPrinttime: " + info.EstimatedPrintTime + "\nAt File: " + info.File + "Using Fillament: \n" + info.Filament + "\n";
@@ -120,9 +106,10 @@ public class PrinterStatusDisplay : MonoBehaviour
         var mainFolder = fileTracker.GetFiles();
         var files = mainFolder.octoprintFiles;
 
+        // show each file available on the printer
         foreach (var file in files)
         {
-            
+
             var name = file.Name;
             var estimatedTimeInSeconds = file.GcodeAnalysis_estimatedPrintTime;
             var successfulPrints = file.Print_success;
@@ -135,25 +122,57 @@ public class PrinterStatusDisplay : MonoBehaviour
             textFiles += $"    Successful Prints: {successfulPrints}/{prints}\n\n";
         };
 
+
+        // update all text meshes
         updateTextFiles(textFiles);
         updateTextStatus(textStatus);
         updateText(text);
     }
 
-
-    void PrinterStatusChanged(OctoprintPrinterState newPrinterState)
+    PrinterState getStateFromFlags(OctoprintPrinterFlags flags)
     {
-        updateTextStatus("Printer status changed:\n" + newPrinterState.ToString());
+        if (flags.Printing)
+        {
+            return PrinterState.Printing;
+        }
+        else if (flags.Pausing)
+        {
+            return PrinterState.Pausing;
+
+        }
+        else if (flags.Cancelling)
+        {
+            return PrinterState.Canceling;
+        }
+        else if (flags.Ready)
+        {
+            return PrinterState.Ready;
+        }
+        else if (flags.ClosedOrError)
+        {
+            return PrinterState.Disconnected;
+        }
+        else
+        {
+            return PrinterState.Unknown;
+        }
     }
 
-    async Task<OctoprintConnection> CreateOctoprintConnectionAsync(string octoPrintUrl, string apiKey)
+
+    /// <summary>
+    /// Create a websocket connection to the printer
+    /// </summary>
+    /// <param name="host">host name of the printer</param>
+    /// <param name="apiKey">api key needed to authenticate</param>
+    /// <returns>connection or null if failed to connect</returns>
+    async Task<OctoprintConnection> Connect(string host, string apiKey)
     {
         updateText("Connecting to printer...");
         try
         {
             OctoprintConnection connection = await Task.Run(() =>
             {
-                return new OctoprintConnection(octoPrintUrl, apiKey);
+                return new OctoprintConnection(host, apiKey);
             });
             updateTextStatus("Connected!");
             return connection;
@@ -165,7 +184,10 @@ public class PrinterStatusDisplay : MonoBehaviour
         }
     }
 
-    // Update the TextMeshPro text
+    /// <summary>
+    /// updates data text mesh
+    /// </summary>
+    /// <param name="text"></param>
     void updateText(string text)
     {
         if (textMeshData != null)
@@ -174,6 +196,10 @@ public class PrinterStatusDisplay : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// updates status text mesh
+    /// </summary>
+    /// <param name="text"></param>
     void updateTextStatus(string text)
     {
         if (textMeshStatus != null)
@@ -182,6 +208,10 @@ public class PrinterStatusDisplay : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// updates file test mesh
+    /// </summary>
+    /// <param name="text"></param>
     void updateTextFiles(string text)
     {
         if (textMeshFiles != null)
@@ -190,13 +220,22 @@ public class PrinterStatusDisplay : MonoBehaviour
         }
     }
 
+
+    /// <summary>
+    /// Formats the temperature
+    /// </summary>
+    /// <param name="temp"></param>
+    /// <returns></returns>
     static string formatTemp(double temp)
     {
-        return string.Format("{0:N1}°C", temp);
+        return string.Format("{0:N1}ï¿½C", temp);
     }
 }
 
 
+/// <summary>
+/// enum to provide possible printer state
+/// </summary>
 enum PrinterState
 {
     Ready,
